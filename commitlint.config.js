@@ -4,7 +4,7 @@ module.exports = {
     'body-leading-blank': [2, 'always'],        // body 开始于空白行
     'footer-leading-blank': [1, 'always'],
     'header-max-length': [2, 'always', 108],    // header 字符最大长度为 108
-    'subject-empty': [2, 'never'],              // subject 不为空 
+    'subject-empty': [2, 'never'],              // subject 不为空
     'type-empty': [2, 'never'],                 // type 不为空
     'subject-case': [0],
     'type-enum': [
@@ -29,4 +29,4 @@ module.exports = {
       ],
     ],
   },
-};
+}
