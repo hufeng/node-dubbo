@@ -1,13 +1,13 @@
 # Errors
 
-Similar to the familiar "404 Not Found" and "500 Internal Server Error" status codes you may have seen in HTTP,Dubbo uses a set of 16 error codes.In the Dubbo protocol, an error is always represented as JSON, and is easily readable in the developer tools of your browser. For example:
+Similar to the familiar "404 Not Found" and "500 Internal Server Error" status codes you may have seen in HTTP, Dubbo uses a set of 16 error codes. In the Dubbo protocol, an error is always represented as JSON, and is easily readable in the developer tools of your browser. For example:
 
 ```
 HTTP/1.1 400 Bad Request
 Content-Type: application/json
 
 {
-  "code": "invalid_argument",
+  "status": "3"
   "message": "sentence cannot be empty"
 }
 ```
@@ -16,7 +16,7 @@ With the gRPC-web protocol, errors are usually not human-readable, but Dubbo pro
 
 # Working with errors
 
-All errors are represented by [`DubboError`]([dubbo-js/packages/dubbo/src/dubbo-error.ts at dubbo3 · apache/dubbo-js (github.com)](https://github.com/apache/dubbo-js/blob/dubbo3/packages/dubbo/src/dubbo-error.ts#L26)), a subtype of the built-in `Error` class. Using a try-catch block, we can catch any error that occurred during a call:
+All errors are represented by [`DubboError`](https://github.com/apache/dubbo-js/blob/dubbo3/packages/dubbo/src/code.ts), a subtype of the built-in `Error` class. Using a try-catch block, we can catch any error that occurred during a call:
 
 ```tsx
 import { DubboError } from "@apachedubbo/dubbo";
@@ -41,7 +41,7 @@ try {
 
 # Error codes
 
-The `code` property holds one of Connect's error codes. All error codes are available through the TypeScript enumeration [`Code`]([dubbo-js/packages/dubbo/src/code.ts at dubbo3 · apache/dubbo-js (github.com)](https://github.com/apache/dubbo-js/blob/dubbo3/packages/dubbo/src/code.ts#L16)). Note that a code is an integer value, but can easily be converted to and from a string value.
+The `code` property holds one of Connect's error codes. All error codes are available through the TypeScript enumeration [`Code`](https://github.com/apache/dubbo-js/blob/dubbo3/packages/dubbo/src/code.ts). Note that a code is an integer value, but can easily be converted to and from a string value.
 
 ```tsx
 import { Code } from "@apachedubbo/dubbo";
