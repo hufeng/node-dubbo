@@ -1,5 +1,4 @@
 # Errors
-# Errors
 
 Similar to the familiar "404 Not Found" and "500 Internal Server Error" status codes you may have seen in HTTP, Dubbo uses a set of 16 error codes. In the Dubbo protocol, an error is always represented as JSON, and is easily readable in the developer tools of your browser. For example:
 
