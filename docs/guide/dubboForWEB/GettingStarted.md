@@ -3,7 +3,7 @@
 ## What is Dubbo-js
 Dubbo-js is the TypeScript implementation of [Dubbo triple protocol (a fully gRPC compatible and http friendly protocol)](https://dubbo.apach.org/zh-cn/overview/reference/protocols/triple-spec/), which can be used for Node.js and web application development. With dubbo-js, you can easily build applications working on browser and frontend that can communicate with backend services through http-based protocol.
 
-![arc](../doc/arc.png)
+![arc](../../imgs/arc.png)
 
 ## Prerequisites
 
