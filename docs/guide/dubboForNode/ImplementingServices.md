@@ -2,7 +2,7 @@
 
 Dubbo handles HTTP routes and most plumbing for you, but implementing the actual business logic is still up to you.
 
-You always register your implementation on the `DubboRouter`. We recommend to create a file `connect.ts` with a registration function in your project:
+You always register your implementation on the DubboRouter. We recommend to create a file dubbo.ts with a registration function in your project:
 
 
 ```ts
