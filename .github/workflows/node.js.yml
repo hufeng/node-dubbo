@@ -50,6 +50,7 @@ jobs:
 
       - name: Build Packages
         run:
+          npm run build --workspace=./packages/dubbo-observable
           npm run build --workspace=./packages/dubbo
           npm run build --workspace=./packages/dubbo-node
 
