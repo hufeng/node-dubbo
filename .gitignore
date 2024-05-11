@@ -59,5 +59,7 @@ dj_lint
 Thumbs.db
 
 # docs
-.vitepress/cache
+docs/.vitepress/cache
 
+# example data
+example/dubbo-observable-example/docker/*-data

@@ -1,0 +1,24 @@
+{
+  "name": "dubbo-observable-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apachedubbo/dubbo": "workspace:3.0.0-alpha",
+    "@apachedubbo/dubbo-fastify": "3.0.0-alpha",
+    "@apachedubbo/dubbo-node": "3.0.0-alpha",
+    "@apachedubbo/protoc-gen-apache-dubbo-es": "workspace:3.0.0-alpha",
+    "@bufbuild/protobuf": "^1.8.0",
+    "@bufbuild/protoc-gen-es": "^1.8.0",
+    "@fastify/cors": "^8.5.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.44.0",
+    "@opentelemetry/exporter-prometheus": "^0.50.0",
+    "@opentelemetry/sdk-trace-node": "^1.23.0",
+    "fastify": "^4.19.2"
+  }
+}

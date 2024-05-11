@@ -12,32 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MethodKind } from "@bufbuild/protobuf";
 import type {
   BinaryReadOptions,
   BinaryWriteOptions,
   JsonReadOptions,
   JsonWriteOptions,
   MethodInfo,
-  ServiceType,
-} from "@bufbuild/protobuf";
-import type { MethodImplSpec, ServiceImplSpec } from "../implementation.js";
-import {
-  uResponseMethodNotAllowed,
-  uResponseUnsupportedMediaType,
-  uResponseVersionNotSupported,
-} from "./universal.js";
-import type {
-  UniversalHandlerFn,
-  UniversalServerRequest,
-} from "./universal.js";
-import { contentTypeMatcher } from "./content-type-matcher.js";
-import type { ContentTypeMatcher } from "./content-type-matcher.js";
-import type { Compression } from "./compression.js";
-import type { ProtocolHandlerFactory } from "./protocol-handler-factory.js";
-import { validateReadWriteMaxBytes } from "./limit-io.js";
-import { DubboError } from "../dubbo-error.js";
-import { Code } from "../code.js";
+  ServiceType
+} from '@bufbuild/protobuf'
+import { MethodKind } from '@bufbuild/protobuf'
+import type { MethodImplSpec, ServiceImplSpec } from '../implementation.js'
+import type { UniversalHandlerFn, UniversalServerRequest } from './universal.js'
+import { uResponseMethodNotAllowed, uResponseUnsupportedMediaType, uResponseVersionNotSupported } from './universal.js'
+import type { ContentTypeMatcher } from './content-type-matcher.js'
+import { contentTypeMatcher } from './content-type-matcher.js'
+import type { Compression } from './compression.js'
+import type { ProtocolHandlerFactory } from './protocol-handler-factory.js'
+import { validateReadWriteMaxBytes } from './limit-io.js'
+import { DubboError } from '../dubbo-error.js'
+import { Code } from '../code.js'
+import type { ObservableOptions } from '@apachedubbo/dubbo-observable'
+import { ProviderMeterCollector } from '@apachedubbo/dubbo-observable'
 
 /**
  * Common options for handlers.
@@ -116,6 +111,14 @@ export interface UniversalHandlerOptions {
    * protocol.
    */
   requireConnectProtocolHeader: boolean;
+
+  /**
+   * Configurations for the observable.
+   * @default {
+   *   enable: false
+   * }
+   */
+  observableOptions?: ObservableOptions;
 }
 
 /**
@@ -243,6 +246,12 @@ export function negotiateProtocol(
   const service = protocolHandlers[0].service;
   const method = protocolHandlers[0].method;
   const requestPath = protocolHandlers[0].requestPath;
+
+  // Create a new metrics collector for service provider.
+  const meterCollector = new ProviderMeterCollector({
+    name: "DubboJS Provider Metrics Collector",
+    version: "v1.0.0"
+  });
   if (
     protocolHandlers.some((h) => h.service !== service || h.method !== method)
   ) {
@@ -258,6 +267,21 @@ export function negotiateProtocol(
     );
   }
   async function protocolNegotiatingHandler(request: UniversalServerRequest) {
+    const contentType = request.header.get("Content-Type") ?? "";
+    const serviceVersion = request.header.get("tri-service-version") ?? "";
+    const serviceGroup = request.header.get("tri-service-group") ?? "";
+    const protocolVersion = request.header.get("tri-protocol-version") ?? "";
+
+    // Total number of collection requests
+    meterCollector?.providerRequest({
+      service: service.typeName,
+      method: method.name,
+      serviceVersion: serviceVersion,
+      serviceGroup: serviceGroup,
+      protocolVersion: protocolVersion,
+      protocol: contentType,
+    });
+
     if (
       method.kind == MethodKind.BiDiStreaming &&
       request.httpVersion.startsWith("1.")
@@ -270,7 +294,6 @@ export function negotiateProtocol(
         header: new Headers({ Connection: "close" }),
       };
     }
-    const contentType = request.header.get("Content-Type") ?? "";
     const matchingMethod = protocolHandlers.filter((h) =>
       h.allowedMethods.includes(request.method)
     );
@@ -289,7 +312,37 @@ export function negotiateProtocol(
       return uResponseUnsupportedMediaType;
     }
     const firstMatch = matchingContentTypes[0];
-    return firstMatch(request);
+    const start = new Date().getTime();
+    const result = firstMatch(request);
+    const end = new Date().getTime();
+    const rt = end - start;
+
+    return result.then(response => {
+      // Total number of collection successful requests
+      meterCollector.providerRequestSucceed({
+        service: service.typeName,
+        method: method.name,
+        serviceVersion: serviceVersion,
+        serviceGroup: serviceGroup,
+        protocolVersion: protocolVersion,
+        protocol: contentType,
+        rt: rt
+      })
+      return response
+    }).catch(e => {
+      // Total number of collection failed requests
+      meterCollector.providerRequestFailed({
+        service: service.typeName,
+        method: method.name,
+        serviceVersion: serviceVersion,
+        serviceGroup: serviceGroup,
+        protocolVersion: protocolVersion,
+        protocol: contentType,
+        rt: rt,
+        error: String(e)
+      })
+      return e;
+    });
   }
 
   return Object.assign(protocolNegotiatingHandler, {

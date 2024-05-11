@@ -63,6 +63,7 @@
     }
   },
   "peerDependencies": {
+    "@apachedubbo/dubbo-observable": "3.0.0-alpha",
     "@bufbuild/protobuf": "^1.2.1"
   },
   "devDependencies": {

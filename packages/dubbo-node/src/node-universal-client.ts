@@ -289,7 +289,7 @@ function h2Request(
   }
   sm.request(method, requestUrl.pathname + requestUrl.search, headers, {}).then(
     (stream) => {
-      stream.session.on("error", sentinel.reject);
+      stream.session?.on("error", sentinel.reject);
 
       sentinel
         .catch((reason) => {
@@ -309,7 +309,7 @@ function h2Request(
           return new Promise<void>((resolve) => stream.close(rstCode, resolve));
         })
         .finally(() => {
-          stream.session.off("error", sentinel.reject);
+          stream.session?.off("error", sentinel.reject);
         })
         .catch(() => {
           // We intentionally swallow sentinel rejection - errors must
