@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-export type { ObservableOptions, Observable } from "./observable";
-export { createObservable } from "./observable";
+export type { ObservableOptions, Observable } from "./observable.js";
+export { createObservable } from "./observable.js";
 
-export type { MeterCollectorOptions, MetricOptions } from "./meter-collector";
-export { MeterCollector, ProviderMeterCollector, ConsumerMeterCollector, ValueType  } from "./meter-collector";
+export type { MeterCollectorOptions, MetricOptions } from "./meter-collector.js";
+export { MeterCollector, ProviderMeterCollector, ConsumerMeterCollector, ValueType  } from "./meter-collector.js";

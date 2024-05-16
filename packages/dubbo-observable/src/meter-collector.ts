@@ -9,7 +9,7 @@ import type {
   UpDownCounter,
 } from '@opentelemetry/api'
 import { metrics, ValueType } from '@opentelemetry/api';
-import { QpsCounter } from './qps-counter';
+import { QpsCounter } from './qps-counter.js';
 
 export { ValueType } from "@opentelemetry/api";
 export type { MetricOptions } from "@opentelemetry/api";
