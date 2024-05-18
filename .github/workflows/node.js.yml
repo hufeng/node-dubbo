@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [16, 19]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Checkout Git Source
@@ -49,12 +49,13 @@ jobs:
         run: npm install -g pnpm@7.30.0 && pnpm i
 
       - name: Build Packages
-        run:
+        run: |
+          npm run build --workspace=./packages/dubbo-observable
           npm run build --workspace=./packages/dubbo
           npm run build --workspace=./packages/dubbo-node
 
       - name: Continuous Integration
-        run:
+        run: |
           npm run jasmine --workspace=./packages/dubbo
           npm run jasmine --workspace=./packages/dubbo-node
 

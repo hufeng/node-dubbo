@@ -2,7 +2,8 @@
   "private": true,
   "name": "dubbo-js-private-workspace",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "npm run build --workspace=./packages/dubbo-observable && npm run build --workspace=./packages/dubbo && npm run build --workspace=./packages/dubbo-node"
   },
   "workspaces": [
     "./packages/dubbo",
@@ -15,7 +16,8 @@
     "./packages/dubbo-express",
     "./packages/dubbo-node-test",
     "./packages/dubbo-web-test",
-    "./packages/dubbo-web-bench"
+    "./packages/dubbo-web-bench",
+    "./packages/dubbo-observable"
   ],
   "engines": {
     "node": ">=16",

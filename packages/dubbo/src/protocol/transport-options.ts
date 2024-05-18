@@ -21,6 +21,7 @@ import type {
 import type { UniversalClientFn } from "./universal.js";
 import type { Interceptor } from "../interceptor.js";
 import type { Compression } from "./compression.js";
+import type { ObservableOptions } from '@apachedubbo/dubbo-observable';
 
 /**
  * @private Internal code, does not follow semantic versioning.
@@ -120,4 +121,12 @@ export interface CommonTransportOptions {
    * available, on side-effect free methods. Defaults to false.
    */
   useHttpGet?: boolean;
+
+  /**
+   * Configurations for the observable.
+   * @default {
+   *   enable: false
+   * }
+   */
+  observableOptions?: ObservableOptions;
 }

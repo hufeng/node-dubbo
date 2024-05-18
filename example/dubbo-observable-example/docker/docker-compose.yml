@@ -1,0 +1,27 @@
+version: '3.1'
+services:
+  grafana:
+    image: grafana/grafana-enterprise:10.0.0
+    hostname: grafana
+    networks:
+      - dubbo-network
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+    ports:
+      - "13000:3000"
+
+  vm:
+    #victoria-metrics-prod -storageDataPath /victoria-metrics -retentionPeriod 180d -promscrape.config /prometheus.yml -promscrape.httpSDCheckInterval 60s
+    image: victoriametrics/victoria-metrics:latest
+    hostname: vm
+    command: -storageDataPath /victoria-metrics-data -retentionPeriod 180d -promscrape.config /prometheus.yml -promscrape.httpSDCheckInterval 60s
+    volumes:
+    - ./prometheus.yml:/prometheus.yml
+    - ./victoria-metrics-data:/victoria-metrics-data
+    networks:
+      - dubbo-network
+    ports:
+      - "18428:8428"
+
+networks:
+  dubbo-network:
