@@ -33,6 +33,7 @@
     "@bufbuild/protobuf": "^1.2.1"
   },
   "devDependencies": {
+    "@apachedubbo/dubbo-observable": "3.0.0-alpha",
     "@types/jasmine": "^4.3.1",
     "jasmine": "^5.0.0"
   },
