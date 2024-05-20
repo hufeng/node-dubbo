@@ -3,7 +3,7 @@
   "name": "dubbo-js-private-workspace",
   "scripts": {
     "prepare": "husky install",
-    "build": "npm run build --workspace=./packages/dubbo-observable && npm run build --workspace=./packages/dubbo && npm run build --workspace=./packages/dubbo-node"
+    "build": "npm run build --workspace=./packages/dubbo-observable && npm run build --workspace=./packages/dubbo && npm run build --workspace=./packages/dubbo-node && npm run build --workspace=./packages/dubbo-web && npm run build --workspace=./packages/dubbo-fastify && npm run build --workspace=./packages/dubbo-next && npm run build --workspace=./packages/dubbo-express"
   },
   "workspaces": [
     "./packages/dubbo",
