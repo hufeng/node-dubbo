@@ -2,15 +2,15 @@
 
 Dubbo handles HTTP routes and most plumbing for you, but implementing the actual business logic is still up to you.
 
-You always register your implementation on the DubboRouter. We recommend to create a file dubbo.ts with a registration function in your project:
-
+You always register your implementation on the `DubboRouter`. We recommend to create a file `dubbo.ts` with a registration
+function in your project:
 
 ```ts
-import { DubboRouter } from "@apachedubbo/dubbo";
+import type { DubboRouter } from "@apachedubbo/dubbo";
 
-export default (router: DubboRouter) => {}
+export default (router: DubboRouter) => {
+}
 ```
-
 
 # Register a service
 
@@ -45,12 +45,13 @@ export default (router: DubboRouter) =>
   });
 ```
 
-Your method `say()` receives the request message and a context object, and returns a response message. It is a plain function!
-
+Your method `say()` receives the request message and a context object, and returns a response message. It is a plain
+function!
 
 # Plain functions
 
-Your function can return a response message, or a promise for a response message, or just an initializer for a response message:
+Your function can return a response message, or a promise for a response message, or just an initializer for a response
+message:
 
 ```ts
 function say(req: SayRequest) {
@@ -70,7 +71,6 @@ const say = (req: SayRequest) => ({ sentence: `You said ${req.sentence}` });
 
 You can register any of these functions for the ElizaService.
 
-
 # Context
 
 The context argument gives you access to headers and service metadata:
@@ -88,8 +88,8 @@ function say(req: SayRequest, context: HandlerContext) {
 }
 ```
 
-It can also be used to access arbitrary values that are passed from either server plugins or interceptors. Please refer to the docs on [interceptors](Interceptors.md) for learn more.
-
+It can also be used to access arbitrary values that are passed from either server plugins or interceptors. Please refer
+to the docs on [interceptors](Interceptors.md) for learn more.
 
 # Errors
 
@@ -103,12 +103,13 @@ function say() {
 }
 ```
 
-`Code` is one of Connects [error codes](). Besides the code and a message, errors can also contain metadata (a Headers object) and error details.
-
+`Code` is one of Connects [error codes](). Besides the code and a message, errors can also contain metadata (a Headers
+object) and error details.
 
 # Error details
 
-Error details are a powerful feature. Any protobuf message can be transmitted as an error detail. Let's use `google.rpc.LocalizedMessage` to localize our error message:
+Error details are a powerful feature. Any protobuf message can be transmitted as an error detail. Let's
+use `google.rpc.LocalizedMessage` to localize our error message:
 
 ```shell
 buf generate buf.build/googleapis/googleapis
@@ -142,14 +143,17 @@ function say() {
 }
 ```
 
-
 # Streaming
 
-Before showing the various handlers for streaming endpoints, we'd like to reference the [Streaming]() page from Dubbo-Go as a caveat. Because while Dubbo for Node.js does support all three variations of streaming endpoints, there are tradeoffs that should be considered before diving in.
+Before showing the various handlers for streaming endpoints, we'd like to reference the [Streaming]() page from Dubbo-Go
+as a caveat. Because while Dubbo for Node.js does support all three variations of streaming endpoints, there are
+tradeoffs that should be considered before diving in.
 
-Streaming can be a very powerful approach to APIs in the right circumstances, but it also requires great care. Remember, with great power comes great responsibility.
+Streaming can be a very powerful approach to APIs in the right circumstances, but it also requires great care. Remember,
+with great power comes great responsibility.
 
-In **client streaming**, the client sends multiple messages. Once the server receives all the messages, it responds with a single message. In Protobuf schemas, client streaming methods look like this:
+In **client streaming**, the client sends multiple messages. Once the server receives all the messages, it responds with
+a single message. In Protobuf schemas, client streaming methods look like this:
 
 ```
 service ElizaService {
@@ -157,13 +161,17 @@ service ElizaService {
 }
 ```
 
-In TypeScript, client streaming methods receive an asynchronous iterable of request messages (you can iterate over them with a for [await...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) loop):
+In TypeScript, client streaming methods receive an asynchronous iterable of request messages (you can iterate over them
+with a for [await...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of)
+loop):
 
 ```ts
-async function vent(reqs: AsyncIterable<VentRequest>): Promise<VentResponse> {}
+async function vent(reqs: AsyncIterable<VentRequest>): Promise<VentResponse> {
+}
 ```
 
-In **server streaming**, the client sends a single message, and the server responds with multiple messages. In Protobuf schemas, server streaming methods look like this:
+In **server streaming**, the client sends a single message, and the server responds with multiple messages. In Protobuf
+schemas, server streaming methods look like this:
 
 ```
 service ElizaService {
@@ -171,28 +179,34 @@ service ElizaService {
 }
 ```
 
-In TypeScript, server streaming methods receive a request message, and return an asynchronous iterable of response messages, typically with a [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
+In TypeScript, server streaming methods receive a request message, and return an asynchronous iterable of response
+messages, typically with
+a [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
 
 ```ts
-async function *introduce(req: IntroduceRequest) {
+async function* introduce(req: IntroduceRequest) {
   yield { sentence: `Hi ${req.name}, I'm eliza` };
   yield { sentence: `How are you feeling today?` };
 }
 ```
 
-In **bidirectional streaming** (often called bidi), the client and server may both send multiple messages. Often, the exchange is structured like a conversation: the client sends a message, the server responds, the client sends another message, and so on. Keep in mind that this always requires end-to-end HTTP/2 support (regardless of RPC protocol)!
-
+In **bidirectional streaming** (often called bidi), the client and server may both send multiple messages. Often, the
+exchange is structured like a conversation: the client sends a message, the server responds, the client sends another
+message, and so on. Keep in mind that this always requires end-to-end HTTP/2 support (regardless of RPC protocol)!
 
 # Helper Types
 
-Service implementations are type-safe. The `service()` method of the `DubboRouter` accepts a `ServiceImpl<T>`, where `T` is a service type. A `ServiceImpl` has a method for each RPC, typed as `MethodImp<M>`, where `M` is a method info object.
+Service implementations are type-safe. The `service()` method of the `DubboRouter` accepts a `ServiceImpl<T>`, where `T`
+is a service type. A `ServiceImpl` has a method for each RPC, typed as `MethodImp<M>`, where `M` is a method info
+object.
 
 You can use these types to compose your service without registering it right away:
 
 ```ts
 import type { MethodImpl, ServiceImpl } from "@apachedubbo/dubbo";
 
-export const say: MethodImpl<typeof ElizaService.methods.say> = ...
+export const say: MethodImpl<typeof ElizaService.methods.say> =
+...
 
 export const eliza: ServiceImpl<typeof ElizaService> = {
   // ...
@@ -210,7 +224,7 @@ export class Eliza implements ServiceImpl<typeof ElizaService> {
 Registering the examples above:
 
 ```ts
-import { DubboRouter } from "@apachedubbo/dubbo";
+import type { DubboRouter } from "@apachedubbo/dubbo";
 import { ElizaService } from "./gen/eliza_dubbo";
 import { say, eliza, Eliza } from "./other-file";
 
