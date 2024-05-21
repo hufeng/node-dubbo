@@ -4,6 +4,8 @@ import { createPromiseClient } from "@apachedubbo/dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 import { createDubboTransport } from "@apachedubbo/dubbo-node";
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus'
+// import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
+// import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-node'
 
 const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
@@ -16,8 +18,8 @@ const transport = createDubboTransport({
     enable: true,
     configuration: {
       serviceName: "dubbo-observable-example",
-      //instrumentations: [getNodeAutoInstrumentations()],
-      //traceExporter: new ConsoleSpanExporter(),
+      // instrumentations: [getNodeAutoInstrumentations()],
+      // traceExporter: new ConsoleSpanExporter(),
       metricReader: new PrometheusExporter({
         port: 9465
       })
