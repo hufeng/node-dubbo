@@ -3,8 +3,8 @@ import { fastifyDubboPlugin } from "@apachedubbo/dubbo-fastify";
 import routes from "./dubbo";
 import cors from "@fastify/cors";
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus'
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
-import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-node'
+// import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
+// import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-node'
 
 async function main() {
   const server = fastify();
@@ -18,8 +18,8 @@ async function main() {
       enable: true,
       configuration: {
         serviceName: "dubbo-observable-example",
-        //instrumentations: [getNodeAutoInstrumentations()],
-        //traceExporter: new ConsoleSpanExporter(),
+        // instrumentations: [getNodeAutoInstrumentations()],
+        // traceExporter: new ConsoleSpanExporter(),
         metricReader: new PrometheusExporter({
           port: 9464
         })

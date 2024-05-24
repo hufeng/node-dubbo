@@ -9,7 +9,7 @@ npx tsx server.ts
 2. 启动服务消费者
 
 ```shell
-npx tsx server.ts
+npx tsx client.ts
 ```
 
 3. 请求服务

@@ -1,4 +1,4 @@
-import { DubboRouter } from "@apachedubbo/dubbo";
+import type { DubboRouter } from "@apachedubbo/dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 
 export default (router: DubboRouter) =>
