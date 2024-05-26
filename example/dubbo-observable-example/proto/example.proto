@@ -12,5 +12,4 @@ message SayResponse {
 
 service ExampleService {
   rpc Say(SayRequest) returns (SayResponse) {}
-  rpc hello(SayRequest) returns (SayResponse) {}
 }

@@ -11,13 +11,12 @@ services:
       - "13000:3000"
 
   vm:
-    #victoria-metrics-prod -storageDataPath /victoria-metrics -retentionPeriod 180d -promscrape.config /prometheus.yml -promscrape.httpSDCheckInterval 60s
     image: victoriametrics/victoria-metrics:latest
     hostname: vm
     command: -storageDataPath /victoria-metrics-data -retentionPeriod 180d -promscrape.config /prometheus.yml -promscrape.httpSDCheckInterval 60s
     volumes:
-    - ./prometheus.yml:/prometheus.yml
-    - ./victoria-metrics-data:/victoria-metrics-data
+      - ./prometheus.yml:/prometheus.yml
+      - ./victoria-metrics-data:/victoria-metrics-data
     networks:
       - dubbo-network
     ports:
