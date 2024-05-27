@@ -55,12 +55,8 @@ import { runUnaryCall, runStreamingCall } from "../protocol/run-call.js";
 import { createMethodSerializationLookup } from "../protocol/serialization.js";
 import type { Transport } from "../transport.js";
 import type { TripleClientServiceOptions } from './client-service-options.js';
-import {
-  ConsumerMeterCollector,
-  createObservable,
-  type ObservableOptions
-} from '@apachedubbo/dubbo-observable';
-import type {Observable} from '@apachedubbo/dubbo-observable';
+import { ConsumerMeterCollector, createObservable } from '@apachedubbo/dubbo-observable';
+import type { Observable, ObservableOptions } from '@apachedubbo/dubbo-observable';
 
 /**
  * The Observable service instance.
@@ -75,7 +71,7 @@ function initObservable(observableOptions?: ObservableOptions) {
   if (!observable) {
     observable = createObservable(observableOptions);
     observable.start();
-    //TODO: observable.shutdown()
+    // TODO: observable.shutdown()
   }
 }
 

@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import type {
   Attributes,
   Counter,
@@ -7,9 +24,9 @@ import type {
   MetricOptions,
   ObservableCounter,
   UpDownCounter,
-} from '@opentelemetry/api'
-import { metrics, ValueType } from '@opentelemetry/api';
-import { QpsCounter } from './qps-counter.js';
+} from "@opentelemetry/api"
+import { metrics, ValueType } from "@opentelemetry/api";
+import { QpsCounter } from "./qps-counter.js";
 
 export { ValueType } from "@opentelemetry/api";
 export type { MetricOptions } from "@opentelemetry/api";
@@ -126,7 +143,6 @@ export class MeterCollector {
  * Service provider metrics collector
  */
 export class ProviderMeterCollector extends MeterCollector {
-
   /**
    * The counter of total number of received requests by the provider
    * @private
@@ -134,10 +150,16 @@ export class ProviderMeterCollector extends MeterCollector {
   private providerRequestTotal: Counter | undefined;
 
   /**
-   * The counter of number of requests successfully received by the provider
+   * The counter of total number of successfully received requests by the provider
    * @private
    */
   private providerRequestSucceedTotal: Counter | undefined;
+
+  /**
+   * The counter of total number of unsuccessfully received requests by the provider
+   * @private
+   */
+  private providerRequestFailedTotal: Counter | undefined
 
   /**
    * The counter of number of requests received by the provider per second counter
@@ -151,12 +173,6 @@ export class ProviderMeterCollector extends MeterCollector {
    */
   private qpsCounter: QpsCounter | undefined;
 
-  /**
-   * Total counter of Failed Requests
-   * @private
-   */
-  private providerRequestFailedTotal: Counter | undefined
-
   constructor(options?: MeterCollectorOptions) {
     super(options)
     this.providerRequestTotal = this.getCounter("dubbo_provider_requests_total", {
@@ -166,13 +182,13 @@ export class ProviderMeterCollector extends MeterCollector {
 
     this.providerRequestSucceedTotal =
       this.getCounter("dubbo_provider_requests_succeed_total", {
-        description: `The number of requests successfully received by the provider`,
+        description: `The total number of successfully received requests by the provider`,
         valueType: ValueType.INT
       });
 
     this.providerRequestFailedTotal =
       this.getCounter("dubbo_provider_requests_failed_total", {
-        description: `Total Failed Requests`,
+        description: `The total number of unsuccessfully received requests by the provider`,
         valueType: ValueType.INT
       });
 
@@ -231,13 +247,25 @@ export class ProviderMeterCollector extends MeterCollector {
  */
 export class ConsumerMeterCollector extends MeterCollector {
   /**
-   * The counter of total number of sent requests by consumers
+   * The counter of total number of received requests by the consumer
    * @private
    */
   private consumerRequestTotal: Counter | undefined;
 
   /**
-   * The counter of number of requests sent by consumers per second
+   * The counter of total number of successfully received requests by the consumer
+   * @private
+   */
+  private consumerRequestSucceedTotal: Counter | undefined;
+
+  /**
+   * The counter of total number of unsuccessfully received requests by the consumer
+   * @private
+   */
+  private consumerRequestFailedTotal: Counter | undefined
+
+  /**
+   * The counter of number of requests received by the consumer per second counter
    * @private
    */
   private consumerRequestQps: ObservableCounter | undefined;
@@ -248,38 +276,27 @@ export class ConsumerMeterCollector extends MeterCollector {
    */
   private qpsCounter: QpsCounter | undefined;
 
-  /**
-   * The counter of number of successful requests sent by consumers
-   * @private
-   */
-  private consumerRequestSucceedTotal: Counter | undefined;
-
-  /**
-   * The counter of total Failed Requests.
-   * @private
-   */
-  private consumerRequestFailedTotal: Counter | undefined
   constructor(options?: MeterCollectorOptions) {
     super(options)
     this.consumerRequestTotal = this.getCounter("dubbo_consumer_requests_total", {
-      description: `Total number of sent requests by consumers`,
+      description: `The total number of received requests by the consumer`,
       valueType: ValueType.INT
     });
 
     this.consumerRequestSucceedTotal =
       this.getCounter("dubbo_consumer_requests_succeed_total", {
-        description: `The number of successful requests sent by consumers`,
+        description: `The total number of successfully received requests by the consumer`,
         valueType: ValueType.INT
       });
 
     this.consumerRequestFailedTotal =
       this.getCounter("dubbo_consumer_requests_failed_total", {
-        description: `Total Failed Requests`,
+        description: `The total number of unsuccessfully received requests by the consumer`,
         valueType: ValueType.INT
       });
 
     this.consumerRequestQps = this.getObservableCounter("dubbo_consumer_qps_total", {
-      description: "The number of requests sent by consumers per second",
+      description: "The number of requests received by the consumer per second",
       valueType: ValueType.INT
     });
   }
