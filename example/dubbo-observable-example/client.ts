@@ -10,7 +10,6 @@ import { PrometheusExporter } from '@opentelemetry/exporter-prometheus'
 const transport = createDubboTransport({
   baseUrl: "http://localhost:8080",
   httpVersion: "1.1",
-
   /**
    * Enable Observable Service on service consumer.
    */
@@ -36,7 +35,6 @@ async function main() {
   const client = createPromiseClient(ExampleService, transport, { serviceVersion: '1.0.0', serviceGroup: 'dubbo' });
 
   server.get("/", (_, reply) => {
-
     client.say({ sentence: "Hello World" }).then(rs => {
       reply.type("application/json");
       reply.send(rs.toJsonString());

@@ -26,6 +26,7 @@ import {
   type NodeTransportOptions,
   validateNodeTransportOptions,
 } from "./node-transport-options.js";
+import type { ObservableOptions } from '@apachedubbo/dubbo-observable'
 
 /**
  * Options used to configure the Dubbo transport.
@@ -122,6 +123,11 @@ type DubboTransportOptions = NodeTransportOptions &
      * available, on side-effect free methods. Defaults to false.
      */
     useHttpGet?: boolean;
+
+    /**
+     * Observable related configurations
+     */
+    observableOptions?: ObservableOptions;
   };
 
 /**

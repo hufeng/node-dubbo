@@ -10,7 +10,6 @@ async function main() {
   const server = fastify();
   await server.register(fastifyDubboPlugin, {
     routes,
-
     /**
      * Enable Observable Service on service provider.
      */
