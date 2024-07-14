@@ -1,11 +1,11 @@
 {
-  "name": "@apachedubbo/dubbo-node",
+  "name": "@apachedubbo/dubbo-observable",
   "version": "3.0.0-alpha",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/apache/dubbo-js.git",
-    "directory": "packages/dubbo-node"
+    "directory": "packages/dubbo-observable"
   },
   "scripts": {
     "clean": "rm -rf ./dist/cjs/* ./dist/esm/* ./dist/types/*",
@@ -26,14 +26,12 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "@apachedubbo/dubbo": "3.0.0-alpha",
-    "headers-polyfill": "^3.1.2"
-  },
-  "peerDependencies": {
-    "@bufbuild/protobuf": "^1.2.1"
+    "@opentelemetry/api": "^1.8.0",
+    "@opentelemetry/sdk-metrics": "^1.23.0",
+    "@opentelemetry/sdk-node": "^0.50.0",
+    "@opentelemetry/sdk-trace-node": "^1.23.0"
   },
   "devDependencies": {
-    "@apachedubbo/dubbo-observable": "3.0.0-alpha",
     "@types/jasmine": "^4.3.1",
     "jasmine": "^5.0.0"
   },

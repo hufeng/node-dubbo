@@ -55,11 +55,91 @@ import { runUnaryCall, runStreamingCall } from "../protocol/run-call.js";
 import { createMethodSerializationLookup } from "../protocol/serialization.js";
 import type { Transport } from "../transport.js";
 import type { TripleClientServiceOptions } from './client-service-options.js';
+import { ConsumerMeterCollector, createObservable } from '@apachedubbo/dubbo-observable';
+import type { Observable, ObservableOptions } from '@apachedubbo/dubbo-observable';
+
+/**
+ * The Observable service instance.
+ */
+let observable: Observable;
+
+/**
+ * If the observable service is not initialized, initialize it
+ * @param observableOptions
+ */
+function initObservable(observableOptions?: ObservableOptions) {
+  if (!observable) {
+    observable = createObservable(observableOptions);
+    observable.start();
+    // TODO: observable.shutdown()
+  }
+}
 
 /**
  * Create a Transport for the Connect protocol.
  */
 export function createTransport(opt: CommonTransportOptions): Transport {
+  if (opt?.observableOptions?.enable) {
+    // Enable and init observable service.
+    initObservable(opt.observableOptions);
+
+    const consumerMeterCollector = new ConsumerMeterCollector({
+      name: "DubboJS Consumer Metrics Collector",
+      version: "v1.0.0"
+    });
+
+    opt.interceptors = opt.interceptors || [];
+    opt.interceptors.push((next) => async (req) => {
+      const contentType = req.header.get("content-type") ?? "";
+      const serviceVersion = req.header.get("tri-service-version") ?? "";
+      const serviceGroup = req.header.get("tri-service-group") ?? "";
+      const protocolVersion = req.header.get("tri-protocol-version") ?? "";
+
+      // Total number of collection send request
+      consumerMeterCollector.consumerRequest({
+        service: req.service.typeName,
+        method: req.method.name,
+        serviceVersion: serviceVersion,
+        serviceGroup: serviceGroup,
+        protocolVersion: protocolVersion,
+        protocol: contentType,
+      });
+
+      const start = new Date().getTime();
+      try {
+        const response = await next(req);
+        const end = new Date().getTime();
+        const rt = end - start;
+
+        // Total number of collection successful request
+        consumerMeterCollector.consumerRequestSucceed({
+          service: response.service.typeName,
+          method: response.method.name,
+          serviceVersion: serviceVersion,
+          serviceGroup: serviceGroup,
+          protocolVersion: protocolVersion,
+          protocol: contentType,
+          rt: rt
+        })
+        return response;
+      } catch (e) {
+        const end = new Date().getTime();
+        const rt = end - start;
+        // Total number of collection fail request
+        consumerMeterCollector.consumerRequestFailed({
+          service: req.service.typeName,
+          method: req.method.name,
+          serviceVersion: serviceVersion,
+          serviceGroup: serviceGroup,
+          protocolVersion: protocolVersion,
+          protocol: contentType,
+          rt: rt,
+          error: String(e)
+        })
+        throw e;
+      }
+    });
+  }
   return {
     async unary<
       I extends Message<I> = AnyMessage,

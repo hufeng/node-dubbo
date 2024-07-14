@@ -81,7 +81,7 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 创建 dubbo.ts 文件
 
 ```typescript
-import { DubboRouter } from "@apachedubbo/dubbo";
+import type { DubboRouter } from "@apachedubbo/dubbo";
 import { ExampleService } from "./gen/example_dubbo";
 
 export default (router: DubboRouter) =>

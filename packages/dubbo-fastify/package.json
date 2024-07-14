@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@apachedubbo/dubbo": "3.0.0-alpha",
+    "@apachedubbo/dubbo-observable": "3.0.0-alpha",
     "@apachedubbo/dubbo-node": "3.0.0-alpha",
     "fastify": "^4.17.0"
   },

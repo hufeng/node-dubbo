@@ -27,7 +27,7 @@ import (
 var (
 	//skip dir
 	rx          = regexp.MustCompile("node_modules|vendor|lib|target|__license__|__notice__|husky|.vitepress")
-	ignore_file = regexp.MustCompile(".eslintrc.js|pnpm-lock.yaml")
+	ignore_file = regexp.MustCompile(".eslintrc.cjs|pnpm-lock.yaml")
 	license     = NewLicense()
 	// lint notice
 	nl = &NoticeLinter{File: "./NOTICE"}

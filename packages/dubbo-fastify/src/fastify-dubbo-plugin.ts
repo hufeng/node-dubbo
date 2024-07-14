@@ -27,6 +27,7 @@ import {
   universalResponseToNodeResponse,
 } from "@apachedubbo/dubbo-node";
 import type { FastifyInstance } from "fastify/types/instance";
+import { createObservable } from "@apachedubbo/dubbo-observable";
 
 interface FastifyDubboPluginOptions extends DubboRouterOptions {
   /**
@@ -62,6 +63,17 @@ export function fastifyDubboPlugin(
   if (opts.acceptCompression === undefined) {
     opts.acceptCompression = [compressionGzip, compressionBrotli];
   }
+
+  if (opts?.observableOptions?.enable) {
+    // Enable and init observable service.
+    const observable = createObservable(opts.observableOptions);
+    observable.start();
+    instance.addHook("onClose", async () => {
+      // shutdown the observable service.
+      await observable.shutdown();
+    });
+  }
+
   const router = createDubboRouter(opts);
   opts.routes(router);
 
