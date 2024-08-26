@@ -112,20 +112,22 @@ npm install fastify @apachedubbo/dubbo-fastify
 import { fastify } from "fastify";
 import { fastifyDubboPlugin } from "@apachedubbo/dubbo-fastify";
 import routes from "./dubbo";
+import { readFileSync } from "fs";
 
 async function main() {
-  const server = fastify();
+  const server = fastify({
+    http2: true,
+    https: {
+      key: readFileSync("localhost+1-key.pem", "utf8"),
+      cert: readFileSync("localhost+1.pem", "utf8"),
+    }
+  });
   await server.register(fastifyDubboPlugin, {
     routes,
   });
-  server.get("/", (_, reply) => {
-    reply.type("text/plain");
-    reply.send("Hello World!");
-  });
-  await server.listen({ host: "localhost", port: 8080 });
+  await server.listen({ host: "localhost", port: 8443 });
   console.log("server is listening at", server.addresses());
 }
-
 void main();
 ```
 
@@ -137,15 +139,22 @@ npx tsx server.ts
 
 ## <span id="accessService">访问服务</span>
 
-最简单方式是使用 HTTP/1.1 POST 请求访问服务，参数则作以标准 JSON 格式作为 HTTP 负载传递。如下是使用 cURL 命令的访问示例:
+我们将使用 `mkcert` 来生成证书。如果你还没有安装它，请运行以下命令：
+
+```
+brew install mkcert
+mkcert -install
+mkcert localhost 127.0.0.1 ::1
+export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
+```
+
+如果你没有使用 macOS 或 `brew`，请参阅 [mkcert 文档](https://github.com/FiloSottile/mkcert#installation) 获取安装说明。你可以将最后一行复制到你的 `~/.zprofile` 或 `~/.profile` 中，这样每次打开终端时，Node.js 的环境变量都会自动设置。
+
+如果你已经在使用 `mkcert`，只需运行 `mkcert localhost 127.0.0.1 ::1` 来为我们的示例服务器生成证书。
 
 ```Shell
-curl \
- --header 'Content-Type: application/json' \
- --header 'TRI-Service-Version: 1.0.0' \
- --header 'TRI-Service-group: dubbo' \
- --data '{"sentence": "Hello World"}' \
- http://localhost:8080/apache.dubbo.demo.example.v1.ExampleService/Say
+npx buf curl --protocol grpc --schema . -d '{"sentence": "Hello Word!"}' \
+https://localhost:8443/apache.dubbo.demo.example.v1.ExampleService/Say
 ```
 
 也可以使用标准的 Dubbo client 请求服务，我们首先需要从生成代码即 dubbo-node 包中获取服务代理，为它指定 server 地址并初始化，之后就可以发起起 RPC 调用了。
@@ -155,11 +164,25 @@ curl \
 ```typescript
 import { createPromiseClient } from "@apachedubbo/dubbo";
 import { ExampleService } from "./gen/example_dubbo";
+import { stdin, stdout, env } from "process";
+import * as readline from "node:readline/promises";
 import { createDubboTransport } from "@apachedubbo/dubbo-node";
 
+const rl = readline.createInterface(stdin, stdout);
+
+let rejectUnauthorized = true;
+
+if (process.env.NODE_EXTRA_CA_CERTS == undefined) {
+  console.log(env.NODE_EXTRA_CA_CERTS);
+  rl.write("It appears that you haven't configured Node.js with your certificate authority for local development. This is okay; we'll bypass TLS errors in this example client. \n");
+  rejectUnauthorized = false;
+}
+
+
 const transport = createDubboTransport({
-  baseUrl: "http://localhost:8080",
-  httpVersion: "1.1",
+  baseUrl: "https://localhost:8443",
+  httpVersion: "2",
+  nodeOptions: { rejectUnauthorized },
 });
 
 async function main() {
