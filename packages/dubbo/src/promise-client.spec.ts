@@ -21,6 +21,7 @@ import {
 import { createAsyncIterable } from "./protocol/async-iterable.js";
 import { createRouterTransport } from "./router-transport.js";
 import type { HandlerContext } from "./implementation";
+import type { TripleClientServiceOptions } from './protocol-triple/client-service-options.js';
 
 const TestService = {
   typeName: "handwritten.TestService",
@@ -52,6 +53,9 @@ describe("createClientStreamingFn()", function () {
 
     const output = new StringValue({ value: "yield 1" });
 
+    // Define serviceOptions
+    const serviceOptions: TripleClientServiceOptions = { serviceVersion: '1.0.0', serviceGroup: 'dubbo' };
+    
     const transport = createRouterTransport(({ service }) => {
       service(TestService, {
         clientStream: (
@@ -65,7 +69,8 @@ describe("createClientStreamingFn()", function () {
     const fn = createClientStreamingFn(
       transport,
       TestService,
-      TestService.methods.clientStream
+      TestService.methods.clientStream,
+      serviceOptions
     );
     const res = await fn(
       // eslint-disable-next-line @typescript-eslint/require-await
@@ -85,6 +90,9 @@ describe("createServerStreamingFn()", function () {
       new StringValue({ value: "input2" }),
       new StringValue({ value: "input3" }),
     ];
+    
+     // Define serviceOptions
+    const serviceOptions: TripleClientServiceOptions = { serviceVersion: '1.0.0', serviceGroup: 'dubbo' };
 
     const transport = createRouterTransport(({ service }) => {
       service(TestService, {
@@ -97,7 +105,8 @@ describe("createServerStreamingFn()", function () {
     const fn = createServerStreamingFn(
       transport,
       TestService,
-      TestService.methods.serverStream
+      TestService.methods.serverStream,
+      serviceOptions
     );
     const receivedMessages: StringValue[] = [];
     const input = new Int32Value({ value: 123 });
@@ -116,6 +125,9 @@ describe("createBiDiStreamingFn()", () => {
       values.map((value) => new Int32Value({ value }))
     );
 
+     // Define serviceOptions
+    const serviceOptions: TripleClientServiceOptions = { serviceVersion: '1.0.0', serviceGroup: 'dubbo' };
+  
     let bidiIndex = 0;
     const transport = createRouterTransport(({ service }) => {
       service(TestService, {
@@ -131,7 +143,8 @@ describe("createBiDiStreamingFn()", () => {
     const fn = createBiDiStreamingFn(
       transport,
       TestService,
-      TestService.methods.bidiStream
+      TestService.methods.bidiStream,
+      serviceOptions
     );
 
     let index = 0;
