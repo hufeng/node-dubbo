@@ -52,6 +52,7 @@ export interface Transport {
     signal: AbortSignal | undefined,
     timeoutMs: number | undefined,
     header: HeadersInit | undefined,
-    input: AsyncIterable<I>
+    input: AsyncIterable<I>,
+    serviceOptions?: TripleClientServiceOptions
   ): Promise<StreamResponse<I, O>>;
 }

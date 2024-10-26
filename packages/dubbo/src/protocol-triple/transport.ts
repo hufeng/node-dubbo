@@ -266,7 +266,8 @@ export function createTransport(opt: CommonTransportOptions): Transport {
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined,
       header: HeadersInit | undefined,
-      input: AsyncIterable<I>
+      input: AsyncIterable<I>,
+      serviceOptions?: TripleClientServiceOptions
     ): Promise<StreamResponse<I, O>> {
       const serialization = createMethodSerializationLookup(
         method,
@@ -297,7 +298,8 @@ export function createTransport(opt: CommonTransportOptions): Transport {
             timeoutMs,
             header,
             opt.acceptCompression,
-            opt.sendCompression
+            opt.sendCompression,
+            serviceOptions
           ),
           message: pipe(input, transformNormalizeMessage(method.I), {
             propagateDownStreamError: true,

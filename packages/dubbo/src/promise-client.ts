@@ -59,11 +59,11 @@ export function createPromiseClient<T extends ServiceType>(
       case MethodKind.Unary:
         return createUnaryFn(transport, service, method, serviceOptions);
       case MethodKind.ServerStreaming:
-        return createServerStreamingFn(transport, service, method);
+        return createServerStreamingFn(transport, service, method, serviceOptions);
       case MethodKind.ClientStreaming:
-        return createClientStreamingFn(transport, service, method);
+        return createClientStreamingFn(transport, service, method, serviceOptions);
       case MethodKind.BiDiStreaming:
-        return createBiDiStreamingFn(transport, service, method);
+        return createBiDiStreamingFn(transport, service, method, serviceOptions);
       default:
         return null;
     }
@@ -115,7 +115,8 @@ export function createServerStreamingFn<
 >(
   transport: Transport,
   service: ServiceType,
-  method: MethodInfo<I, O>
+  method: MethodInfo<I, O>,
+  serviceOptions?: TripleClientServiceOptions
 ): ServerStreamingFn<I, O> {
   return async function* (input, options): AsyncIterable<O> {
     const inputMessage =
@@ -126,7 +127,8 @@ export function createServerStreamingFn<
       options?.signal,
       options?.timeoutMs,
       options?.headers,
-      createAsyncIterable([inputMessage])
+      createAsyncIterable([inputMessage]),
+      serviceOptions
     );
     options?.onHeader?.(response.header);
     yield* response.message;
@@ -149,7 +151,8 @@ export function createClientStreamingFn<
 >(
   transport: Transport,
   service: ServiceType,
-  method: MethodInfo<I, O>
+  method: MethodInfo<I, O>,
+  serviceOptions?: TripleClientServiceOptions
 ): ClientStreamingFn<I, O> {
   return async function (
     request: AsyncIterable<PartialMessage<I>>,
@@ -166,7 +169,8 @@ export function createClientStreamingFn<
       options?.signal,
       options?.timeoutMs,
       options?.headers,
-      input()
+      input(),
+      serviceOptions
     );
     options?.onHeader?.(response.header);
     let singleMessage: O | undefined;
@@ -199,7 +203,8 @@ export function createBiDiStreamingFn<
 >(
   transport: Transport,
   service: ServiceType,
-  method: MethodInfo<I, O>
+  method: MethodInfo<I, O>,
+  serviceOptions?: TripleClientServiceOptions
 ): BiDiStreamingFn<I, O> {
   return async function* (
     request: AsyncIterable<PartialMessage<I>>,
@@ -216,7 +221,8 @@ export function createBiDiStreamingFn<
       options?.signal,
       options?.timeoutMs,
       options?.headers,
-      input()
+      input(),
+      serviceOptions
     );
     options?.onHeader?.(response.header);
     yield* response.message;
